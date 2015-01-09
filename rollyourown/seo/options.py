@@ -1,9 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-from django.db.models.options import get_verbose_name
 from django.db import models
 from django.utils.datastructures import SortedDict
+
+try:
+    from django.utils.text import camel_case_to_spaces
+except ImportError:
+    # Compatibility with Django<=1.6:
+    from django.db.models.options import get_verbose_name as camel_case_to_spaces
 
 class Options(object):
     def __init__(self, meta, help_text=None):
@@ -32,7 +37,7 @@ class Options(object):
 
     def _update_from_name(self, name):
         self.name = name
-        self.verbose_name = self.verbose_name or get_verbose_name(name)
+        self.verbose_name = self.verbose_name or camel_case_to_spaces(name)
         self.verbose_name_plural = self.verbose_name_plural or self.verbose_name + 's'
 
     def _register_elements(self, elements):
